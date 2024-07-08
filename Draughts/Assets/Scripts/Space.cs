@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class Space : MonoBehaviour
 {
-    // Start is called before the first frame update
+    enum states {Empty, Red, RedKing, Black, BlackKing};
+    bool isSelected = false;
+    int currentState = 0;
+
+    public Sprite[] sprites; 
     void Start()
     {
         
     }
-
-    // Update is called once per frame
-    void Update()
+    public void OnMouseDown()
     {
-        
+    }
+    public void changeState(int state)
+    {
+        if (state >= 0 && state <= 4)
+            currentState = state;
+
+        this.GetComponent<SpriteRenderer>().sprite = sprites[state]; 
     }
 }
