@@ -17,6 +17,7 @@ public class Space : MonoBehaviour
         circle = transform.GetChild(0).gameObject;
         circle.GetComponent<Renderer>().enabled = false; 
     }
+
     public void KingMe()
     {
         if (currentState == 1 || currentState == 3)
@@ -36,7 +37,7 @@ public class Space : MonoBehaviour
         }
         else
         {
-            if(board.IsSelected())
+            if(board.IsSelected() || board.isDoubleJump())
             {
                 board.HandleSelect(row, col); 
             }
