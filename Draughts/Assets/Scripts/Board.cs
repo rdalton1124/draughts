@@ -10,11 +10,10 @@ public class Board : MonoBehaviour
     int currentState = 0; 
     public GameObject space;
     private List<Space> spaces;
-    private bool isSelected = false; //is at least one space selected.
     Vector2 firstSelected, secondSelected;
     int existingChildren;
     bool isRedTurn = true;
-    public GameObject text; 
+    public TMP_Text textbox; 
     void Start()
     {
         existingChildren = transform.childCount; //number of children other than the spaces. 
@@ -47,6 +46,7 @@ public class Board : MonoBehaviour
     void ToggleTurn()
     {
         isRedTurn = !isRedTurn;
+        textbox.text = isRedTurn ? "Red's Turn" : "Black's Turn"; 
 
     }
     public void HandleSelect(int x2, int y2)
@@ -204,7 +204,6 @@ public class Board : MonoBehaviour
     }
     public void Select() 
     {
-        isSelected = true;
         currentState = 1; 
     }
     public void SetFirstSelected(int x, int y)
@@ -213,7 +212,6 @@ public class Board : MonoBehaviour
     }
     public void Unselect()
     {
-        isSelected = false;
         firstSelected = new Vector2(-1, -1);
         secondSelected = new Vector2(-1, -1);
         currentState = 0; 
