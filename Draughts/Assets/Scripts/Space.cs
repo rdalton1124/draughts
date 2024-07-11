@@ -4,42 +4,42 @@ using UnityEngine;
 
 public class Space : MonoBehaviour
 {
-    public enum states {Empty, Red, RedKing, Black, BlackKing};
+    public enum states { Empty, Red, RedKing, Black, BlackKing };
     bool isSelected = false;
     int currentState = 0;
     GameObject circle;
     public Sprite[] sprites;
     Board board;
-    int row, col; 
+    int row, col;
     void Start()
     {
-        board = transform.parent.gameObject.GetComponent<Board>(); 
+        board = transform.parent.gameObject.GetComponent<Board>();
         circle = transform.GetChild(0).gameObject;
-        circle.GetComponent<Renderer>().enabled = false; 
+        circle.GetComponent<Renderer>().enabled = false;
     }
 
     public void KingMe()
     {
         if (currentState == 1 || currentState == 3)
-            ChangeState(currentState + 1); 
+            ChangeState(currentState + 1);
     }
     public void SetPosition(int x, int y)
     {
         row = x;
-        col = y; 
+        col = y;
     }
     public void OnMouseDown()
     {
         if (currentState != 0) //space is not empty
         {
-            if(isSelected || !board.IsSelected())
+            if (isSelected || !board.IsSelected())
                 ToggleSelected();
         }
         else
         {
-            if(board.IsSelected() || board.isDoubleJump())
+            if (board.IsSelected() || board.isDoubleJump())
             {
-                board.HandleSelect(row, col); 
+                board.HandleSelect(row, col);
             }
         }
     }
@@ -50,7 +50,7 @@ public class Space : MonoBehaviour
         if (isSelected)
         {
             board.Select();
-            board.SetFirstSelected(this.row, this.col); 
+            board.SetFirstSelected(this.row, this.col);
         }
         else
             board.Unselect();
@@ -65,10 +65,30 @@ public class Space : MonoBehaviour
         if (state >= 0 && state <= 4)
             currentState = state;
 
-        this.GetComponent<SpriteRenderer>().sprite = sprites[state]; 
+        this.GetComponent<SpriteRenderer>().sprite = sprites[state];
     }
     public int GetState()
     {
-        return currentState; 
+        return currentState;
+    }
+    public bool IsEmpty()
+    {
+        return currentState == (int)states.Empty;
+    }
+    public bool IsRed()
+    {
+        return currentState == (int)states.Red || currentState == (int)states.Red;
+    }
+    public bool IsBlack()
+    {
+        return currentState == (int)states.Black || currentState == (int)states.BlackKing; 
+    }
+    public bool IsKing()
+    {
+        return currentState == (int)states.RedKing || currentState == (int)states.BlackKing; 
+    }
+    public void Empty()
+    {
+        ChangeState(0); 
     }
 }

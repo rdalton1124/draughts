@@ -39,56 +39,44 @@ public class Board : MonoBehaviour
             }
         }
     }
-    int getIndex(int x, int y)
-    {
-        return (y * 4) + x + existingChildren;
-    }
-    void ToggleTurn()
-    {
-        isRedTurn = !isRedTurn;
-        textbox.text = isRedTurn ? "Red's Turn" : "Black's Turn"; 
-
-    }
+ 
     public void HandleSelect(int x2, int y2)
     {
         secondSelected = new Vector2(x2, y2);
-        Space firstSpace = transform.GetChild(getIndex((int)firstSelected.x, (int)firstSelected.y)).GetComponent<Space>();
-        Space secondSpace = transform.GetChild(getIndex(x2, y2)).GetComponent<Space>();
+        Space firstSpace = GetSpace(firstSelected);
+        Space secondSpace = GetSpace(secondSelected); 
 
-        if ((isRedTurn && !(firstSpace.GetState() == 1 || firstSpace.GetState() == 2))
-        || (!isRedTurn && !(firstSpace.GetState() == 3 || firstSpace.GetState() == 4)))
+        if ((isRedTurn && !firstSpace.IsRed())
+        || (!isRedTurn && !firstSpace.IsBlack()))
         {
             Unselect();
             return; 
         }
-   
-        if (CanCaptureHere(firstSelected, secondSelected, firstSpace.GetState()) ||
-            CanMoveHere(firstSelected, secondSelected, firstSpace.GetState()))
+        if (CanCaptureHere(firstSelected, secondSelected) ||
+            CanMoveHere(firstSelected, secondSelected))
         {
-            if ((firstSpace.GetState() == 1 && y2 == 7)
-                || (firstSpace.GetState() == 3 && y2 == 0))
+
+            if ((firstSpace.IsRed() && y2 == 7)
+                || (firstSpace.IsBlack() && y2 == 0))
                 firstSpace.KingMe();
-            if(isDoubleJump())
+
+            if (isDoubleJump())
             {
-                if(CanCaptureHere(firstSelected, secondSelected, firstSpace.GetState()))
+                if(CanCaptureHere(firstSelected, secondSelected))
                 {
-                    secondSpace.ChangeState(firstSpace.GetState());
-                    firstSpace.ChangeState(0); 
+                    Capture(firstSelected, secondSelected); 
                 }
-                if(!CanDoubleJump(secondSelected, secondSpace.GetState()))
+
+                if(!CanDoubleJump(secondSelected))
                 {
-                    ToggleTurn();
-                    Unselect(); 
+                    currentState = (int)state.NotSelected;
                 }
             }
-            else if (CanCaptureHere(firstSelected, secondSelected, firstSpace.GetState()))
+            else if (CanCaptureHere(firstSelected, secondSelected))
             {
-                Vector2 midpoint = FindMindPointBlock(firstSelected, secondSelected);
-                transform.GetChild(getIndex((int)midpoint.x, (int)midpoint.y)).GetComponent<Space>().ChangeState(0);
 
-                secondSpace.ChangeState(firstSpace.GetState());
-                firstSpace.ChangeState(0);
-                if (CanDoubleJump(secondSelected, secondSpace.GetState()))
+                Capture(firstSelected, secondSelected); 
+                if (CanDoubleJump(secondSelected))
                 {
                     currentState = (int)state.DoubleJump;
                     firstSelected = secondSelected; 
@@ -99,84 +87,63 @@ public class Board : MonoBehaviour
                 {
                     ToggleTurn();
                     Unselect();
-
                 }
              }
             else
             {
                 if (!isDoubleJump())
                 {
-                    secondSpace.ChangeState(firstSpace.GetState());
-                    firstSpace.ChangeState(0);
+                    ChangeSpaces(firstSpace, secondSpace);
+                    ToggleTurn();
+                    Unselect();
                 }
-                ToggleTurn();
-                Unselect();
             }
         }
     }
-    bool CanDoubleJump(Vector2 pos, int state)
+
+    bool CanDoubleJump(Vector2 pos)
     {
         int x1 = (int) pos.x - 1, x2 = (int) pos.x + 1;
         int y1 = (int) pos.y + 2, y2 = (int) pos.y - 2;
 
-        return (CanCaptureHere(pos, new Vector2(x1, y1), state) ||
-                    CanCaptureHere(pos, new Vector2(x1, y2), state) ||
-                    CanCaptureHere(pos, new Vector2(x2, y1), state) ||
-                    CanCaptureHere(pos, new Vector2(x2, y2), state)); 
+        return (CanCaptureHere(pos, new Vector2(x1, y1)) ||
+                    CanCaptureHere(pos, new Vector2(x1, y2)) ||
+                    CanCaptureHere(pos, new Vector2(x2, y1)) ||
+                    CanCaptureHere(pos, new Vector2(x2, y2))); 
     }
-    bool CanCaptureHere(Vector2 start, Vector2 dest, int state)
+    bool CanCaptureHere(Vector2 start, Vector2 dest)
     {
-        if (dest.x < 0 || dest.y < 0 || dest.x > 7 || dest.y > 7)
+        Space destSpace = transform.GetChild(GetIndex((int)dest.x, (int)dest.y)).GetComponent<Space>();
+        Space startSpace = transform.GetChild(GetIndex((int)start.x, (int)start.y)).GetComponent<Space>();
+
+        Vector2 pieceCoord = FindMindPointBlock(start, dest);
+        Space midSpace = transform.GetChild(GetIndex((int)pieceCoord.x, (int)pieceCoord.y)).GetComponent<Space>();
+
+        if (dest.x < 0 || dest.y < 0 || dest.x > 7 || dest.y > 7) //if destination is out of bounds somehow
             return false;
-        if (Mathf.Abs(start.y - dest.y) != 2)
+        if (Mathf.Abs(start.y - dest.y) != 2) //if destination is not two rows higher or two rows lower. 
             return false;
-        if (Mathf.Abs(start.x - dest.x) != 1)
+        if (Mathf.Abs(start.x - dest.x) != 1)//if destination is 
             return false;
 
-        Vector2 pieceCoord = FindMindPointBlock(start, dest); 
-        int pieceState = transform.GetChild(getIndex((int) pieceCoord.x, (int) pieceCoord.y)).GetComponent<Space>().GetState();
-        if (state == 1 || state == 2)
+        if (!destSpace.IsEmpty() || midSpace.IsEmpty()) //if destination is not empty or piece to be capture is empty. 
+            return false;
+        if (startSpace.IsRed() == midSpace.IsRed()) //if the piece to be captured is the same color. 
+            return false;
+
+        if (startSpace.IsRed())
         {
-            if (state == 1 && dest.y < start.y)
-                return false;
-
-            if (pieceState  == 3 || pieceState == 4)
-            {
-                return true;
-            }
+            return (startSpace.IsKing() || dest.y > start.y);
         }
-        else if(state == 3 || state == 4)
+        else if(startSpace.IsBlack())
         {
-            if (state == 3 && dest.y > start.y)
-                return false; 
-            if (pieceState == 1 || pieceState == 2)
-            {
-                return true;
-            }
+            return (startSpace.IsKing() || dest.y < start.y); 
         }
         return false; 
     }
-    Vector2 FindMindPointBlock(Vector2 start, Vector2 dest)
+
+    bool CanMoveHere(Vector2 start, Vector2 dest)
     {
-        int dx = 0; 
-        if (start.y % 2 == 0)
-        {
-            if (dest.x == start.x - 1)
-                dx = -1;
-        }
-        else
-        {
-            if (dest.x == start.x + 1)
-                dx = 1;
-        }
-        int dy = (dest.y > start.y) ? 1 : -1;
-
-        return new Vector2((int) start.x + dx, start.y + dy); 
-    }
-    bool CanMoveHere(Vector2 start, Vector2 dest, int state)
-    {
-
-
         if (Mathf.Abs(dest.y - start.y) != 1)
             return false;
 
@@ -194,13 +161,57 @@ public class Board : MonoBehaviour
             if (start.x != dest.x && start.x + 1 != dest.x)
                 return false; 
         }
-        if (state == 2 || state == 4)
+        if (GetSpace(start).IsKing())
             return true;
-        if (state == 1 && dest.y <= start.y)
+        if (GetSpace(start).IsRed() && dest.y <= start.y)
             return false;
-        if (state == 3 && dest.y >= start.y)
+        if (GetSpace(start).IsBlack()&& dest.y >= start.y)
             return false;
         return true;
+    }
+    int GetIndex(int x, int y)
+    {
+        return (y * 4) + x + existingChildren;
+    }
+    void ToggleTurn()
+    {
+        isRedTurn = !isRedTurn;
+        textbox.text = isRedTurn ? "Red's Turn" : "Black's Turn";
+
+    }
+    Vector2 FindMindPointBlock(Vector2 start, Vector2 dest)
+    {
+        int dx = 0;
+        if (start.y % 2 == 0)
+        {
+            if (dest.x == start.x - 1)
+                dx = -1;
+        }
+        else
+        {
+            if (dest.x == start.x + 1)
+                dx = 1;
+        }
+        int dy = (dest.y > start.y) ? 1 : -1;
+
+        return new Vector2((int)start.x + dx, start.y + dy);
+    }
+    Space GetSpace(Vector2 coords)
+    {
+        int x = (int)coords.x, y = (int)coords.y; 
+        return transform.GetChild(GetIndex(x, y)).GetComponent<Space>(); 
+    }
+    void Capture(Vector2 start, Vector2 dest)
+    {
+        ChangeSpaces(GetSpace(start), GetSpace(dest));
+        Vector2 midpoint = FindMindPointBlock(start, dest);
+        GetSpace(midpoint).Empty();
+
+    }
+    void ChangeSpaces(Space first, Space second)
+    {
+        second.ChangeState(first.GetState());
+        first.Empty();
     }
     public void Select() 
     {
