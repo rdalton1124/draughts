@@ -20,7 +20,7 @@ public class Space : MonoBehaviour
 
     public void KingMe()
     {
-        if (currentState == 1 || currentState == 3)
+        if (currentState == (int)states.Red || currentState == (int)states.Black)
             ChangeState(currentState + 1);
     }
     public void SetPosition(int x, int y)
@@ -30,7 +30,7 @@ public class Space : MonoBehaviour
     }
     public void OnMouseDown()
     {
-        if (currentState != 0) //space is not empty
+        if (!IsEmpty())//space is not empty
         {
             if (isSelected || !board.IsSelected())
                 ToggleSelected();
@@ -77,7 +77,7 @@ public class Space : MonoBehaviour
     }
     public bool IsRed()
     {
-        return currentState == (int)states.Red || currentState == (int)states.Red;
+        return currentState == (int)states.Red || currentState == (int)states.RedKing;
     }
     public bool IsBlack()
     {
@@ -91,4 +91,13 @@ public class Space : MonoBehaviour
     {
         ChangeState(0); 
     }
+    public int GetX()
+    {
+        return row; 
+    }
+    public int GetY()
+    {
+        return col; 
+    }
+
 }

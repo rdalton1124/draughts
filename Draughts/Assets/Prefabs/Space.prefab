@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 5492939330217991526}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.25, y: 6.25, z: 1}
+  m_LocalScale: {x: 3.125, y: 3.125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3592163032663108114}
@@ -48,11 +48,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprites:
-  - {fileID: -958858260, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
-  - {fileID: 1520064560, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
-  - {fileID: 1172001844, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
-  - {fileID: -1835021991, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
-  - {fileID: 1085221062, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
+  - {fileID: 879917222, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
+  - {fileID: -1280571950, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
+  - {fileID: -866612215, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
+  - {fileID: -840584678, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
+  - {fileID: -1590108116, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
 --- !u!212 &7182216393635172366
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -94,7 +94,7 @@ SpriteRenderer:
   m_SortingLayerID: -2136558387
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -958858260, guid: 42af549a17e004c519d4a819fddc0272, type: 3}
+  m_Sprite: {fileID: 879917222, guid: ef778e8f6db2840f9abe4fde9362f441, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,14 +122,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.16}
+    oldSize: {x: 0.32, y: 0.32}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.16, y: 0.16}
+  m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
 --- !u!1 &6570471818883448678
 GameObject:
@@ -157,7 +157,7 @@ Transform:
   m_GameObject: {fileID: 6570471818883448678}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.128, y: 0.128, z: 1}
+  m_LocalScale: {x: 0.256, y: 0.256, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5492939330217991528}
