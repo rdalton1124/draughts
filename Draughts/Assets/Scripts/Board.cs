@@ -25,7 +25,7 @@ public class Board : MonoBehaviour
             {
                 Instantiate(space, transform);
                 float newX = (float)(y % 2 == 0 ? (2 * x) - 3.5 : (2 * x) - 2.5);
-                GetSpace(x, y).transform.position = new Vector2(newX, (float)(y - 3.5));
+                GetSpace(x, y).transform.position = new Vector2((float) transform.localScale.x * newX, (float) (transform.localScale.y * (y - 3.5)));
                 GetSpace(x, y).SetPosition(x, y);
 
                 if (y < 3)
@@ -98,8 +98,6 @@ public class Board : MonoBehaviour
     {
         int x1 = (int)pos.x - 1, x2 = (int)pos.x + 1;
         int y1 = (int)pos.y + 2, y2 = (int)pos.y - 2;
-        Debug.Log("x1= " + x1 + ", y1 = " + y1 + "\n");
-        Debug.Log("x2 = " + x2 + ", y2 = " + y2 + "\n\n");
         return (CanCaptureHere(pos, new Vector2(x1, y1)) ||
                     CanCaptureHere(pos, new Vector2(x1, y2)) ||
                     CanCaptureHere(pos, new Vector2(x2, y1)) ||
