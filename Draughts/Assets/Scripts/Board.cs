@@ -64,8 +64,7 @@ public class Board : MonoBehaviour
 
                 if (!CanDoubleJump(secondSelected))
                 {
-                    ToggleTurn();
-                    Unselect();
+                    EndTurn(); 
                 }
             }
             else if (CanCaptureHere(firstSelected, secondSelected))
@@ -81,15 +80,13 @@ public class Board : MonoBehaviour
                 }
                 else
                 {
-                    ToggleTurn();
-                    Unselect();
+                    EndTurn(); 
                 }
             }
             else
             { 
-                    ChangeSpaces(firstSpace, secondSpace);
-                    ToggleTurn();
-                    Unselect();
+                ChangeSpaces(firstSpace, secondSpace);
+                EndTurn(); 
             }
         }
     }
@@ -105,13 +102,12 @@ public class Board : MonoBehaviour
     }
     bool CanCaptureHere(Vector2 start, Vector2 dest)
     {
-        if (dest.x < 0 || dest.y < 0 || dest.x > 7 || dest.y > 7) //if destination is out of bounds somehow
+        if (dest.x < 0 || dest.y < 0 || dest.x > 3 || dest.y > 7) //if destination is out of bounds somehow
             return false;
-
-        Space destSpace = transform.GetChild(GetIndex((int)dest.x, (int)dest.y)).GetComponent<Space>();
-        Space startSpace = transform.GetChild(GetIndex((int)start.x, (int)start.y)).GetComponent<Space>();
-        Vector2 pieceCoord = FindMindPointBlock(start, dest);
-        Space midSpace = transform.GetChild(GetIndex((int)pieceCoord.x, (int)pieceCoord.y)).GetComponent<Space>();
+        Space destSpace = GetSpace((int)dest.x, (int)dest.y); 
+        Space startSpace = GetSpace((int) start.x, (int) start.y);
+        Vector2 mid = FindMindPointBlock(start, dest);
+        Space midSpace = GetSpace((int) mid.x, (int) mid.y); 
 
         if (Mathf.Abs(start.y - dest.y) != 2) //if destination is not two rows higher or two rows lower. 
             return false;
@@ -192,7 +188,19 @@ public class Board : MonoBehaviour
     Space GetSpace(Vector2 coords)
     {
         int x = (int)coords.x, y = (int)coords.y;
-        return transform.GetChild(GetIndex(x, y)).GetComponent<Space>();
+        Space space; 
+        try
+        {
+            space = transform.GetChild(GetIndex(x, y)).GetComponent<Space>();
+        }
+        catch(UnityException e)
+        {
+            Debug.LogException(e, this);
+            Debug.Log("x = " + coords.x);
+            Debug.Log("y = " + coords.y);
+            space = transform.GetChild(existingChildren).GetComponent<Space>(); 
+        }
+        return space; 
     }
     Space GetSpace(int x, int y)
     {
@@ -244,7 +252,7 @@ public class Board : MonoBehaviour
         Unselect();
         ToggleTurn();
 
-        if(GameOver())
+        if(IsGameOver())
         {
             if (Count(true) == 0)
                 textbox.text = "Black Wins!";
@@ -252,7 +260,7 @@ public class Board : MonoBehaviour
                 textbox.text = "Red Wins!"; 
         }
     }
-    public bool GameOver()
+    public bool IsGameOver()
     {
         if (Count(true) == 0 || Count(false) == 0)
             return true;
