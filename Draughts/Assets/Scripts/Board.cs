@@ -14,11 +14,12 @@ public class Board : MonoBehaviour
     int existingChildren;
     bool isRedTurn = true;
     public TMP_Text textbox;
+    public Button endTurnButton; 
     void Start()
     {
         existingChildren = transform.childCount; //number of children other than the spaces. 
         spaces = new List<Space>();
-
+        endTurnButton.interactable = false;
         for (int y = 0; y < 8; y++)
         {
             for (int x = 0; x < 4; x++)
@@ -77,6 +78,8 @@ public class Board : MonoBehaviour
                     firstSelected = secondSelected;
                     secondSelected = new Vector2(-1, -1);
                     firstSpace.Unselect();
+                    secondSpace.ToggleSelected();
+                    endTurnButton.interactable = true; 
                 }
                 else
                 {
@@ -249,6 +252,7 @@ public class Board : MonoBehaviour
     }
     public void EndTurn()
     {
+        endTurnButton.interactable = false; 
         Unselect();
         ToggleTurn();
 
