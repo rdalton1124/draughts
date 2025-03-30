@@ -40,7 +40,10 @@ public class Board : MonoBehaviour
             }
         }
     }
+    public void SaveToJSON()
+    {
 
+    }
     public void HandleSelect(int x2, int y2)
     {
         secondSelected = new Vector2(x2, y2);
@@ -52,17 +55,20 @@ public class Board : MonoBehaviour
             Unselect();
             return;
         }
-
+              
         if (CanCaptureHere(firstSelected, secondSelected) ||
             CanMoveHere(firstSelected, secondSelected))
         {
-            if (isDoubleJump())
+            if (IsDoubleJump())
             {
                 if (CanCaptureHere(firstSelected, secondSelected))
                 {
                     Capture(firstSelected, secondSelected);
                 }
-
+                else
+                {
+                    EndTurn(); 
+                }
                 if (!CanDoubleJump(secondSelected))
                 {
                     EndTurn(); 
@@ -93,7 +99,6 @@ public class Board : MonoBehaviour
             }
         }
     }
-
     bool CanDoubleJump(Vector2 pos)
     {
         int x1 = (int)pos.x - 1, x2 = (int)pos.x + 1;
@@ -109,7 +114,7 @@ public class Board : MonoBehaviour
             return false;
         Space destSpace = GetSpace((int)dest.x, (int)dest.y); 
         Space startSpace = GetSpace((int) start.x, (int) start.y);
-        Vector2 mid = FindMindPointBlock(start, dest);
+        Vector2 mid = FindMidPointBlock(start, dest);
         Space midSpace = GetSpace((int) mid.x, (int) mid.y); 
 
         if (Mathf.Abs(start.y - dest.y) != 2) //if destination is not two rows higher or two rows lower. 
@@ -132,7 +137,6 @@ public class Board : MonoBehaviour
         }
         return false;
     }
-
     bool CanMoveHere(Vector2 start, Vector2 dest)
     {
         if (Mathf.Abs(dest.y - start.y) != 1)
@@ -171,7 +175,7 @@ public class Board : MonoBehaviour
         textbox.text = isRedTurn ? "Red's Turn" : "Black's Turn";
 
     }
-    Vector2 FindMindPointBlock(Vector2 start, Vector2 dest)
+    Vector2 FindMidPointBlock(Vector2 start, Vector2 dest)
     {
         int dx = 0;
         if (start.y % 2 == 0)
@@ -191,19 +195,7 @@ public class Board : MonoBehaviour
     Space GetSpace(Vector2 coords)
     {
         int x = (int)coords.x, y = (int)coords.y;
-        Space space; 
-        try
-        {
-            space = transform.GetChild(GetIndex(x, y)).GetComponent<Space>();
-        }
-        catch(UnityException e)
-        {
-            Debug.LogException(e, this);
-            Debug.Log("x = " + coords.x);
-            Debug.Log("y = " + coords.y);
-            space = transform.GetChild(existingChildren).GetComponent<Space>(); 
-        }
-        return space; 
+        return transform.GetChild(GetIndex(x, y)).GetComponent<Space>(); 
     }
     Space GetSpace(int x, int y)
     {
@@ -212,7 +204,7 @@ public class Board : MonoBehaviour
     void Capture(Vector2 start, Vector2 dest)
     {
         ChangeSpaces(GetSpace(start), GetSpace(dest));
-        Vector2 midpoint = FindMindPointBlock(start, dest);
+        Vector2 midpoint = FindMidPointBlock(start, dest);
         GetSpace(midpoint).Empty();
 
     }
@@ -241,8 +233,12 @@ public class Board : MonoBehaviour
         {
             transform.GetChild(i).GetComponent<Space>().Unselect();
         }
+        if(endTurnButton.interactable) // change once IsDoubleJump is fixed.
+        {
+            EndTurn();
+        }
     }
-    public bool isDoubleJump()
+    public bool IsDoubleJump()
     {
         return currentState == (int)state.DoubleJump;
     }

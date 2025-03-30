@@ -30,14 +30,23 @@ public class Space : MonoBehaviour
     }
     public void OnMouseDown()
     {
-        if (!IsEmpty())//space is not empty
+        if (board.IsDoubleJump()) 
         {
-            if (isSelected || !board.IsSelected())
+            Debug.Log(board.IsDoubleJump() + "\n");
+            if (isSelected)
+            {
+                ToggleSelected();
+                board.EndTurn();
+            }
+        }
+        else if (!IsEmpty()) //space is not empty
+        {
+            if (!board.IsSelected() || isSelected)
                 ToggleSelected();
         }
         else
         {
-            if (board.IsSelected() || board.isDoubleJump())
+            if (board.IsSelected())
             {
                 board.HandleSelect(row, col);
             }
@@ -53,8 +62,10 @@ public class Space : MonoBehaviour
             board.SetFirstSelected(this.row, this.col);
         }
         else
+        {
             board.Unselect();
-    }
+        }
+     }
     public void Unselect()
     {
         if (isSelected)
