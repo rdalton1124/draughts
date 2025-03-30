@@ -233,14 +233,12 @@ public class Board : MonoBehaviour
         {
             transform.GetChild(i).GetComponent<Space>().Unselect();
         }
-        if(endTurnButton.interactable) // change once IsDoubleJump is fixed.
-        {
-            EndTurn();
-        }
     }
     public bool IsDoubleJump()
     {
-        return currentState == (int)state.DoubleJump;
+        //TEMP FIX CHANGE BACK LATER
+        return endTurnButton.interactable; 
+        //return currentState == (int)state.DoubleJump;
     }
     public bool IsSelected()
     {

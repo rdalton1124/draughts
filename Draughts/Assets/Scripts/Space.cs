@@ -30,14 +30,10 @@ public class Space : MonoBehaviour
     }
     public void OnMouseDown()
     {
-        if (board.IsDoubleJump()) 
+        if (board.IsDoubleJump() && isSelected) 
         {
-            Debug.Log(board.IsDoubleJump() + "\n");
-            if (isSelected)
-            {
-                ToggleSelected();
-                board.EndTurn();
-            }
+            ToggleSelected();
+            board.EndTurn();
         }
         else if (!IsEmpty()) //space is not empty
         {
